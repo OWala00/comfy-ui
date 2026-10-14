@@ -1,0 +1,17 @@
+{
+  "name": "comfy-ui",
+  "version": "0.1.0",
+  "description": "A lightweight UI framework for building interfaces",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node src/index.js",
+    "test": "node --test test/**/*.test.js"
+  },
+  "keywords": ["ui", "framework"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.0"
+  }
+}
