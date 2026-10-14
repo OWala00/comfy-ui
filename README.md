@@ -6,6 +6,14 @@ A small JavaScript UI library, plus a Timer Stop custom node for ComfyUI.
 
 The image is rendered from `demo/graph.html` by `scripts/render-thumbnail.sh`. It shows the node and graph components with placeholder nodes.
 
+## Live demo
+
+Drag the nodes, then start the simulated job. Timer Stop ends it after the set number of seconds, or you can cancel it.
+
+https://owala00.github.io/comfy-ui/demo/graph.html
+
+The job is a placeholder. It does not run ComfyUI.
+
 ## Features
 
 - Lightweight: no dependencies (except express for server)

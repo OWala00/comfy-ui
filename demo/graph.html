@@ -5,11 +5,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>comfy UI</title>
   <link rel="stylesheet" href="../src/ui/styles/graph.css">
+  <style>
+    #app {
+      position: relative;
+      width: 1024px;
+      height: 576px;
+    }
+    .node {
+      cursor: grab;
+    }
+    .node.dragging {
+      cursor: grabbing;
+    }
+    .job {
+      position: absolute;
+      left: 280px;
+      bottom: 12px;
+      width: 300px;
+      box-sizing: border-box;
+      padding: 12px;
+      background: #2a2a2a;
+      border: 1px solid #000000;
+      border-radius: 6px;
+      color: #dddddd;
+      font: 12px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .job h2 {
+      margin: 0 0 8px;
+      font-size: 13px;
+    }
+    .job label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .job input {
+      width: 70px;
+      background: #353535;
+      color: #dddddd;
+      border: 1px solid #000000;
+      border-radius: 4px;
+      padding: 4px;
+    }
+    .job button {
+      background: #353535;
+      color: #dddddd;
+      border: 1px solid #000000;
+      border-radius: 4px;
+      padding: 5px 12px;
+      margin-right: 6px;
+      cursor: pointer;
+    }
+    .job button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    .bar {
+      height: 8px;
+      margin: 10px 0 6px;
+      background: #1e1e1e;
+      border: 1px solid #000000;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: #4fc1ff;
+    }
+    .status {
+      min-height: 16px;
+      color: #9aa0a6;
+    }
+    .note {
+      margin-top: 8px;
+      color: #7d8590;
+      font-size: 11px;
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>
   <script type="module">
     import { Graph } from '../src/ui/components/Graph.js';
+    import { createTimerStop } from '../src/nodes/TimerStop.js';
 
     const nodes = [
       { id: 'form', title: 'Form Input', x: 60, y: 150,
@@ -38,9 +119,78 @@
       { from: { node: 'render', slot: 0 }, to: { node: 'label', slot: 0 }, type: 'TARGET' },
     ];
 
-    document.getElementById('app').appendChild(
-      Graph({ width: 1024, height: 576, nodes, links })
-    );
+    const app = document.getElementById('app');
+    app.appendChild(Graph({ width: 1024, height: 576, nodes, links }));
+
+    const panel = document.createElement('div');
+    panel.className = 'job';
+    panel.innerHTML = `
+      <h2>Simulated job</h2>
+      <label>Stop after (seconds)
+        <input id="seconds" type="number" min="1" max="60" value="5">
+      </label>
+      <div>
+        <button id="start">Start</button>
+        <button id="cancel" disabled>Cancel</button>
+      </div>
+      <div class="bar"><i id="fill"></i></div>
+      <div class="status" id="status">Idle</div>
+      <div class="note">A placeholder job. Timer Stop calls its stop function here, not ComfyUI.</div>
+    `;
+    app.appendChild(panel);
+
+    const secondsInput = panel.querySelector('#seconds');
+    const startButton = panel.querySelector('#start');
+    const cancelButton = panel.querySelector('#cancel');
+    const fill = panel.querySelector('#fill');
+    const status = panel.querySelector('#status');
+
+    let timer = null;
+    let ticker = null;
+    let startedAt = 0;
+    let duration = 0;
+
+    function finish(text) {
+      clearInterval(ticker);
+      ticker = null;
+      startButton.disabled = false;
+      cancelButton.disabled = true;
+      status.textContent = text;
+    }
+
+    function tick() {
+      const elapsed = (Date.now() - startedAt) / 1000;
+      const ratio = Math.min(elapsed / duration, 1);
+      fill.style.width = `${(ratio * 100).toFixed(1)}%`;
+      status.textContent = `Running ${elapsed.toFixed(1)}s of ${duration}s`;
+    }
+
+    startButton.addEventListener('click', () => {
+      duration = Number(secondsInput.value);
+      if (!(duration >= 1 && duration <= 60)) {
+        status.textContent = 'Enter 1 to 60 seconds';
+        return;
+      }
+      startedAt = Date.now();
+      fill.style.width = '0%';
+      startButton.disabled = true;
+      cancelButton.disabled = false;
+      timer = createTimerStop({
+        seconds: duration,
+        onStop: () => {
+          fill.style.width = '100%';
+          finish(`Stopped by Timer Stop after ${duration}s`);
+        },
+      });
+      ticker = setInterval(tick, 100);
+      tick();
+      timer.start();
+    });
+
+    cancelButton.addEventListener('click', () => {
+      timer.cancel();
+      finish('Cancelled');
+    });
   </script>
 </body>
 </html>

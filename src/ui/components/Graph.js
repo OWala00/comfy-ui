@@ -1,4 +1,4 @@
-import { Node, slotPosition, SLOT_COLORS } from './Node.js';
+import { Node, NODE_WIDTH, slotPosition, SLOT_COLORS } from './Node.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -28,25 +28,66 @@ export function Graph({ width, height, nodes, links = [] }) {
   `;
 
   const byId = new Map(nodes.map((n) => [n.id, n]));
-
-  for (const link of links) {
-    const source = byId.get(link.from.node);
-    const target = byId.get(link.to.node);
-    const start = slotPosition(source, 'output', link.from.slot);
-    const end = slotPosition(target, 'input', link.to.slot);
-    const color = SLOT_COLORS[link.type] ?? '#9aa0a6';
-
+  const drawn = links.map((link) => {
     const path = document.createElementNS(SVG_NS, 'path');
-    path.setAttribute('d', linkPath(start, end));
-    path.setAttribute('stroke', color);
+    path.setAttribute('stroke', SLOT_COLORS[link.type] ?? '#9aa0a6');
     path.setAttribute('stroke-width', '2');
     path.setAttribute('fill', 'none');
     svg.appendChild(path);
+    return { link, path };
+  });
+
+  function redraw() {
+    for (const { link, path } of drawn) {
+      const start = slotPosition(byId.get(link.from.node), 'output', link.from.slot);
+      const end = slotPosition(byId.get(link.to.node), 'input', link.to.slot);
+      path.setAttribute('d', linkPath(start, end));
+    }
   }
 
   root.appendChild(svg);
+  const elements = new Map();
   for (const node of nodes) {
-    root.appendChild(Node(node));
+    const el = Node(node);
+    elements.set(node.id, el);
+    root.appendChild(el);
   }
+  redraw();
+
+  let drag = null;
+  const clamp = (value, max) => Math.min(Math.max(value, 0), Math.max(max, 0));
+
+  for (const node of nodes) {
+    const el = elements.get(node.id);
+
+    el.addEventListener('pointerdown', (event) => {
+      const rect = root.getBoundingClientRect();
+      drag = {
+        id: node.id,
+        offsetX: event.clientX - rect.left - node.x,
+        offsetY: event.clientY - rect.top - node.y,
+      };
+      el.setPointerCapture(event.pointerId);
+      el.classList.add('dragging');
+    });
+
+    el.addEventListener('pointermove', (event) => {
+      if (!drag || drag.id !== node.id) return;
+      const rect = root.getBoundingClientRect();
+      node.x = clamp(event.clientX - rect.left - drag.offsetX, width - NODE_WIDTH);
+      node.y = clamp(event.clientY - rect.top - drag.offsetY, height - el.offsetHeight);
+      el.style.left = `${node.x}px`;
+      el.style.top = `${node.y}px`;
+      redraw();
+    });
+
+    const release = () => {
+      drag = null;
+      el.classList.remove('dragging');
+    };
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+  }
+
   return root;
 }
