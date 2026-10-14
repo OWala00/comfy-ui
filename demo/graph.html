@@ -90,37 +90,36 @@
   <div id="app"></div>
   <script type="module">
     import { Graph } from '../src/ui/components/Graph.js';
+    import { createNode } from '../src/nodes/createNode.js';
     import { createTimerStop } from '../src/nodes/TimerStop.js';
 
     const nodes = [
-      { id: 'form', title: 'Form Input', x: 60, y: 150,
-        outputs: [{ name: 'fields', type: 'DATA' }, { name: 'required', type: 'BOOLEAN' }] },
-      { id: 'validate', title: 'Validate', x: 330, y: 90,
-        inputs: [{ name: 'fields', type: 'DATA' }, { name: 'required', type: 'BOOLEAN' }],
-        outputs: [{ name: 'data', type: 'DATA' }] },
-      { id: 'store', title: 'Store', x: 330, y: 260,
-        inputs: [{ name: 'data', type: 'DATA' }],
-        outputs: [{ name: 'state', type: 'STATE' }] },
-      { id: 'render', title: 'Render', x: 610, y: 170,
-        inputs: [{ name: 'target', type: 'TARGET' }, { name: 'state', type: 'STATE' }],
-        outputs: [{ name: 'output', type: 'TARGET' }] },
-      { id: 'label', title: 'Label', x: 610, y: 340,
-        inputs: [{ name: 'text', type: 'STRING' }] },
-      { id: 'timer', title: 'Timer Stop', x: 60, y: 380,
-        inputs: [{ name: 'seconds', type: 'NUMBER' }],
-        outputs: [{ name: 'stopped', type: 'BOOLEAN' }] },
+      createNode('input', { id: 'first', x: 40, y: 80, title: 'First name' }),
+      createNode('input', { id: 'last', x: 40, y: 200, title: 'Last name' }),
+      createNode('concatenate', { id: 'join', x: 300, y: 120 }),
+      createNode('delay', { id: 'wait', x: 560, y: 120 }),
+      createNode('output', { id: 'display', x: 800, y: 80, title: 'Display' }),
+      createNode('logger', { id: 'log', x: 560, y: 260 }),
+      createNode('output', { id: 'sink', x: 800, y: 240, title: 'Log output' }),
+      createNode('timerStop', { id: 'timer', x: 40, y: 400 }),
     ];
 
     const links = [
-      { from: { node: 'form', slot: 0 }, to: { node: 'validate', slot: 0 }, type: 'DATA' },
-      { from: { node: 'form', slot: 1 }, to: { node: 'validate', slot: 1 }, type: 'BOOLEAN' },
-      { from: { node: 'validate', slot: 0 }, to: { node: 'store', slot: 0 }, type: 'DATA' },
-      { from: { node: 'store', slot: 0 }, to: { node: 'render', slot: 1 }, type: 'STATE' },
-      { from: { node: 'render', slot: 0 }, to: { node: 'label', slot: 0 }, type: 'TARGET' },
+      { from: { node: 'first', slot: 0 }, to: { node: 'join', slot: 0 }, type: 'STRING' },
+      { from: { node: 'last', slot: 0 }, to: { node: 'join', slot: 1 }, type: 'STRING' },
+      { from: { node: 'join', slot: 0 }, to: { node: 'wait', slot: 0 }, type: 'STRING' },
+      { from: { node: 'wait', slot: 0 }, to: { node: 'display', slot: 0 }, type: 'STRING' },
+      { from: { node: 'wait', slot: 0 }, to: { node: 'log', slot: 0 }, type: 'STRING' },
+      { from: { node: 'log', slot: 0 }, to: { node: 'sink', slot: 0 }, type: 'STRING' },
     ];
 
     const app = document.getElementById('app');
     app.appendChild(Graph({ width: 1024, height: 576, nodes, links }));
+
+    const hint = document.createElement('div');
+    hint.className = 'hint';
+    hint.textContent = 'Drag from a dot to another dot of the same type. Double-click a node to edit it. Right-click a link to remove it.';
+    app.appendChild(hint);
 
     const panel = document.createElement('div');
     panel.className = 'job';
