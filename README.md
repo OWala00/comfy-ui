@@ -26,6 +26,27 @@ const btn = Button({
 render(btn, document.getElementById('app'));
 ```
 
+## Custom node: Timer Stop
+
+Timer Stop is a comfy UI node that calls a stop function after a set number of seconds. Use it to stop a running job on a timer.
+
+```javascript
+import { createTimerStop } from './src/nodes/TimerStop.js';
+
+const timer = createTimerStop({
+  seconds: 30,
+  onStop: () => console.log('stopped'),
+});
+timer.start();
+// timer.cancel() prevents the stop
+```
+
+Current scope:
+
+- The node only runs the callback you pass in. It is not connected to any image generator in this repo.
+- Wiring it to a real image generation job means passing in that job's stop function.
+- It has no ComfyUI integration yet. Running it inside ComfyUI needs that project's node API, which this repo does not implement.
+
 ## Development
 
 ```bash

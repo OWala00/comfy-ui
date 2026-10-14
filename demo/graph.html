@@ -25,6 +25,9 @@
         outputs: [{ name: 'output', type: 'TARGET' }] },
       { id: 'label', title: 'Label', x: 610, y: 340,
         inputs: [{ name: 'text', type: 'STRING' }] },
+      { id: 'timer', title: 'Timer Stop', x: 60, y: 380,
+        inputs: [{ name: 'seconds', type: 'NUMBER' }],
+        outputs: [{ name: 'stopped', type: 'BOOLEAN' }] },
     ];
 
     const links = [
