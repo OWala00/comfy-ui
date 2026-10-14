@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>comfy UI</title>
+  <link rel="stylesheet" href="../src/ui/styles/graph.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module">
+    import { Graph } from '../src/ui/components/Graph.js';
+
+    const nodes = [
+      { id: 'form', title: 'Form Input', x: 60, y: 150,
+        outputs: [{ name: 'fields', type: 'DATA' }, { name: 'required', type: 'BOOLEAN' }] },
+      { id: 'validate', title: 'Validate', x: 330, y: 90,
+        inputs: [{ name: 'fields', type: 'DATA' }, { name: 'required', type: 'BOOLEAN' }],
+        outputs: [{ name: 'data', type: 'DATA' }] },
+      { id: 'store', title: 'Store', x: 330, y: 260,
+        inputs: [{ name: 'data', type: 'DATA' }],
+        outputs: [{ name: 'state', type: 'STATE' }] },
+      { id: 'render', title: 'Render', x: 610, y: 170,
+        inputs: [{ name: 'target', type: 'TARGET' }, { name: 'state', type: 'STATE' }],
+        outputs: [{ name: 'output', type: 'TARGET' }] },
+      { id: 'label', title: 'Label', x: 610, y: 340,
+        inputs: [{ name: 'text', type: 'STRING' }] },
+    ];
+
+    const links = [
+      { from: { node: 'form', slot: 0 }, to: { node: 'validate', slot: 0 }, type: 'DATA' },
+      { from: { node: 'form', slot: 1 }, to: { node: 'validate', slot: 1 }, type: 'BOOLEAN' },
+      { from: { node: 'validate', slot: 0 }, to: { node: 'store', slot: 0 }, type: 'DATA' },
+      { from: { node: 'store', slot: 0 }, to: { node: 'render', slot: 1 }, type: 'STATE' },
+      { from: { node: 'render', slot: 0 }, to: { node: 'label', slot: 0 }, type: 'TARGET' },
+    ];
+
+    document.getElementById('app').appendChild(
+      Graph({ width: 1024, height: 576, nodes, links })
+    );
+  </script>
+</body>
+</html>
