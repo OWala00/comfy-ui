@@ -8,11 +8,11 @@ The image is rendered from `demo/graph.html` by `scripts/render-thumbnail.sh`. I
 
 ## Live demo
 
-Drag the nodes, then start the simulated job. Timer Stop ends it after the set number of seconds, or you can cancel it.
+Drag nodes and link their dots. Double-click a node to edit it. Right-click a link to remove it. Start the simulated job to see Timer Stop end it.
 
 https://owala00.github.io/comfy-ui/demo/graph.html
 
-The job is a placeholder. It does not run ComfyUI.
+The job is a placeholder. It does not run ComfyUI. See [docs/QUICK_START.md](docs/QUICK_START.md) and [docs/NODE_TYPES.md](docs/NODE_TYPES.md).
 
 ## Features
 
