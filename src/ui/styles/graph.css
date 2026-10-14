@@ -66,4 +66,79 @@ body {
   height: 10px;
   border-radius: 50%;
   border: 1px solid #000000;
+  cursor: crosshair;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.modal {
+  width: 280px;
+  padding: 16px;
+  background: #2a2a2a;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  color: #dddddd;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.modal h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.modal label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.modal input[type='text'],
+.modal input:not([type]) {
+  width: 160px;
+  background: #353535;
+  color: #dddddd;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.modal input[type='color'] {
+  width: 48px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #000000;
+  background: none;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modal-actions button {
+  background: #353535;
+  color: #dddddd;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.hint {
+  position: absolute;
+  left: 40px;
+  top: 20px;
+  color: #7d8590;
+  font-size: 12px;
 }

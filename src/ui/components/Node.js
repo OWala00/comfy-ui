@@ -18,7 +18,18 @@ export function slotPosition(node, side, index) {
   return { x, y };
 }
 
-export function Node({ id, title, x, y, inputs = [], outputs = [] }) {
+function slotDot(nodeId, side, index, slot) {
+  const dot = document.createElement('i');
+  dot.className = 'node-slot';
+  dot.style.background = SLOT_COLORS[slot.type] ?? '#9aa0a6';
+  dot.dataset.node = nodeId;
+  dot.dataset.side = side;
+  dot.dataset.index = index;
+  dot.dataset.type = slot.type;
+  return dot;
+}
+
+export function Node({ id, title, x, y, color, inputs = [], outputs = [] }) {
   const el = document.createElement('div');
   el.className = 'node';
   el.dataset.id = id;
@@ -29,6 +40,7 @@ export function Node({ id, title, x, y, inputs = [], outputs = [] }) {
   const header = document.createElement('div');
   header.className = 'node-header';
   header.textContent = title;
+  if (color) header.style.background = color;
   el.appendChild(header);
 
   const body = document.createElement('div');
@@ -43,10 +55,7 @@ export function Node({ id, title, x, y, inputs = [], outputs = [] }) {
     const left = document.createElement('span');
     left.className = 'node-slot-label';
     if (inputs[i]) {
-      const dot = document.createElement('i');
-      dot.className = 'node-slot';
-      dot.style.background = SLOT_COLORS[inputs[i].type] ?? '#9aa0a6';
-      left.appendChild(dot);
+      left.appendChild(slotDot(id, 'input', i, inputs[i]));
       left.appendChild(document.createTextNode(inputs[i].name));
     }
 
@@ -54,10 +63,7 @@ export function Node({ id, title, x, y, inputs = [], outputs = [] }) {
     right.className = 'node-slot-label node-slot-label-right';
     if (outputs[i]) {
       right.appendChild(document.createTextNode(outputs[i].name));
-      const dot = document.createElement('i');
-      dot.className = 'node-slot';
-      dot.style.background = SLOT_COLORS[outputs[i].type] ?? '#9aa0a6';
-      right.appendChild(dot);
+      right.appendChild(slotDot(id, 'output', i, outputs[i]));
     }
 
     row.appendChild(left);
