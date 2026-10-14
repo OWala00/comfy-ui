@@ -6,3 +6,4 @@ build/
 .env
 .env.local
 .venv/
+__pycache__/

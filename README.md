@@ -1,6 +1,6 @@
 # Comfy UI
 
-A minimal, composable UI framework for JavaScript.
+A small JavaScript UI library, plus a Timer Stop custom node for ComfyUI.
 
 ![comfy UI node graph](docs/thumbnail.png)
 
@@ -26,26 +26,20 @@ const btn = Button({
 render(btn, document.getElementById('app'));
 ```
 
-## Custom node: Timer Stop
+## ComfyUI custom node: Timer Stop
 
-Timer Stop is a comfy UI node that calls a stop function after a set number of seconds. Use it to stop a running job on a timer.
+`comfyui_timer_stop/` is a ComfyUI custom node. Add a Timer Stop node with a `seconds` input. When the node runs, it starts a timer. When the timer fires, it calls ComfyUI's `interrupt_current_processing()`, which stops the running generation.
 
-```javascript
-import { createTimerStop } from './src/nodes/TimerStop.js';
+Install:
 
-const timer = createTimerStop({
-  seconds: 30,
-  onStop: () => console.log('stopped'),
-});
-timer.start();
-// timer.cancel() prevents the stop
-```
+1. Copy the `comfyui_timer_stop/` folder into `ComfyUI/custom_nodes/`.
+2. Restart ComfyUI. The node appears under `utils/timing` as "Timer Stop".
 
-Current scope:
+Limits:
 
-- The node only runs the callback you pass in. It is not connected to any image generator in this repo.
-- Wiring it to a real image generation job means passing in that job's stop function.
-- It has no ComfyUI integration yet. Running it inside ComfyUI needs that project's node API, which this repo does not implement.
+- The timer does not check which job is running. If the job finishes before the timer fires, the interrupt can hit the next job.
+- The node is covered by unit tests with a stubbed `comfy` module. It has not been run inside a live ComfyUI instance from this repo.
+- The JavaScript `src/nodes/TimerStop.js` is a separate sample and does not connect to ComfyUI.
 
 ## Development
 
